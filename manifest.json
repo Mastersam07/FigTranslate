@@ -5,7 +5,6 @@
   "main": "code.js",
   "capabilities": [],
   "enableProposedApi": false,
-  "documentAccess": "dynamic-page",
   "editorType": [
     "figma",
     "figjam"
