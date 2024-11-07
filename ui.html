@@ -1,17 +1,25 @@
-<h2>Shape Creator</h2>
-<p>Count: <input id="count" type="number" value="5"></p>
-<button id="create">Create</button>
-<button id="cancel">Cancel</button>
-<script>
+<!DOCTYPE html>
+<html>
+  <body>
+    <h3>Export Text Nodes to ARB</h3>
+    <button id="exportButton">Extract and Download .arb</button>
+    <script>
+      document.getElementById('exportButton').onclick = () => {
+        parent.postMessage({ pluginMessage: { type: 'export-text' } }, '*');
+      };
 
-document.getElementById('create').onclick = () => {
-  const textbox = document.getElementById('count');
-  const count = parseInt(textbox.value, 10);
-  parent.postMessage({ pluginMessage: { type: 'create-shapes', count } }, '*')
-}
-
-document.getElementById('cancel').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
-}
-
-</script>
+      onmessage = (event) => {
+        if (event.data.pluginMessage.type === 'download-arb') {
+          const arbData = event.data.pluginMessage.data;
+          const blob = new Blob([arbData], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "translations.arb";
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      };
+    </script>
+  </body>
+</html>
