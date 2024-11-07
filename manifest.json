@@ -2,14 +2,14 @@
   "name": "FigTranslate",
   "id": "1436337262676583479",
   "api": "1.0.0",
-  "main": "code.js",
+  "main": "src/main.js",
   "capabilities": [],
   "enableProposedApi": false,
   "editorType": [
     "figma",
-    "figjam"
+    "dev"
   ],
-  "ui": "ui.html",
+  "ui": "src/ui.html",
   "networkAccess": {
     "allowedDomains": [
       "none"
