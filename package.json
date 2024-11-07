@@ -1,8 +1,8 @@
 {
   "name": "FigTranslate",
   "version": "1.0.0",
-  "description": "Your Figma Plugin",
-  "main": "code.js",
+  "description": "Seamless Text Extraction for Translation from Figma to ARB",
+  "main": "src/main.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "lint": "eslint --ext .ts,.tsx --ignore-pattern node_modules .",
