@@ -10,8 +10,6 @@ if (figma.editorType === 'figma') {
   figma.ui.onmessage =  (msg: {type: string, count: number}) => {
     if (msg.type === 'export-text') {
       const arbData = generateArbData();
-      
-      console.log(arbData)
 
       figma.ui.postMessage({ type: 'download-arb', data: arbData });
     }
@@ -19,19 +17,36 @@ if (figma.editorType === 'figma') {
 }
 
 function generateArbData() {
-  const textNodes = figma.root.findAll(node => node.type === "TEXT") as TextNode[];
-  const arbData: Record<string, any> = {};
 
-  arbData['@@locale'] = 'en';
+  // Threshold for minimum frame dimensions
+  const MIN_WIDTH = 430;
+  const MIN_HEIGHT = 932;
 
-  textNodes.forEach((node, index) => {
-    const key = `text_${index}`;
-    arbData[key] = node.characters;
-    arbData[`@${key}`] = {
-      "description": node.name || "No description"
-    };
+  const designScreens = figma.currentPage.children.filter(node => 
+    node.type === "FRAME" &&
+    node.width >= MIN_WIDTH &&
+    node.height >= MIN_HEIGHT
+  ) as FrameNode[];
+
+  const arbData: Record<string, any> = {
+    "@@locale": "en",
+  };
+
+  // Iterate through each design screen and extract visible text nodes
+  designScreens.forEach(screen => {
+    console.log(screen.name)
+    const textNodes = screen.findAll(node => node.type === "TEXT" && node.visible) as TextNode[];
+
+    textNodes.forEach((node, index) => {
+      const key = `${screen.name.replace(/\s+/g, '_')}_text_${index}`;
+      arbData[key] = node.characters;
+      arbData[`@${key}`] = {
+        "description": node.name || "No description"
+      };
+    });
   });
 
   return JSON.stringify(arbData, null, 2);
 }
+
 
