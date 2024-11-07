@@ -23,7 +23,6 @@
     const dimensionInputs = document.getElementById('dimensionInputs');
 
     useSelectedFrameCheckbox.onchange = () => {
-      // Hide dimension inputs if the checkbox is checked
       const disableDimensions = useSelectedFrameCheckbox.checked;
       dimensionInputs.style.display = disableDimensions ? 'none' : 'block';
     };
@@ -33,13 +32,14 @@
       const minHeight = parseInt(document.getElementById('minHeight').value, 10);
       const useSelectedFrame = useSelectedFrameCheckbox.checked;
 
-      // Send only the necessary data
+      // message to send
       const pluginMessage = { type: 'export-text', useSelectedFrame };
       if (!useSelectedFrame) {
         pluginMessage.minWidth = minWidth;
         pluginMessage.minHeight = minHeight;
       }
 
+      // Ensure message is formatted correctly
       if (useSelectedFrame || (!isNaN(minWidth) && !isNaN(minHeight))) {
         parent.postMessage({ pluginMessage }, '*');
       } else {
@@ -49,7 +49,7 @@
 
     onmessage = (event) => {
       if (event.data.pluginMessage.type === 'download-arb') {
-        const arbData = event.data.pluginMessage.data;
+        const arbData = JSON.stringify(event.data.pluginMessage.data, null, 2);
         const blob = new Blob([arbData], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
