@@ -4,28 +4,25 @@
 // full browser environment (See https://www.figma.com/plugin-docs/how-plugins-run).
 
 // Runs this code if the plugin is run in Figma
-if (figma.editorType === 'figma') {
-  figma.showUI(__html__);
+if (figma.editorType === 'figma' || figma.editorType === 'dev') {
+  figma.showUI(__html__, { width: 600, height: 250 });
 
-  figma.ui.onmessage =  (msg: {type: string, count: number}) => {
+  figma.ui.onmessage = async  (msg) => {
     if (msg.type === 'export-text') {
-      const arbData = generateArbData();
+
+      const { minWidth, minHeight } = msg;
+
+      const arbData = generateArbData(minWidth, minHeight);
 
       figma.ui.postMessage({ type: 'download-arb', data: arbData });
     }
   };
 }
 
-function generateArbData() {
-
-  // Threshold for minimum frame dimensions
-  const MIN_WIDTH = 430;
-  const MIN_HEIGHT = 932;
+function generateArbData(minWidth: number, minHeight: number) {
 
   const designScreens = figma.currentPage.children.filter(node => 
-    node.type === "FRAME" &&
-    node.width >= MIN_WIDTH &&
-    node.height >= MIN_HEIGHT
+    node.type === "FRAME"  && node.width >= minWidth && node.height >= minHeight
   ) as FrameNode[];
 
   const arbData: Record<string, any> = {
