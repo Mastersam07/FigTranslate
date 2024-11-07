@@ -10,9 +10,11 @@ if (figma.editorType === 'figma' || figma.editorType === 'dev') {
   figma.ui.onmessage = async (msg) => {
     if (msg.type === 'export-text') {
 
-      const { minWidth, minHeight } = msg;
+      const { minWidth, minHeight, useSelectedFrame } = msg;
 
-      const arbData = generateArbData(minWidth, minHeight);
+      const arbData = useSelectedFrame && figma.currentPage.selection.length === 1 && figma.currentPage.selection[0].type === "FRAME"
+      ? generateArbDataFromSelection(figma.currentPage.selection[0] as FrameNode)
+      : generateArbData(minWidth, minHeight);
 
       figma.ui.postMessage({ type: 'download-arb', data: arbData });
     }
@@ -33,6 +35,25 @@ function toCamelCase(str: string): string {
   }
 
   return camelCased;
+}
+
+// Function to generate data from a specific frame selection
+function generateArbDataFromSelection(frame: FrameNode) {
+  const arbData: Record<string, any> = {
+    "@@locale": "en",
+  };
+
+  const textNodes = frame.findAll(node => node.type === "TEXT" && node.visible && !isKeyboardText(node)) as TextNode[];
+
+  textNodes.forEach((node, index) => {
+    const key = toCamelCase(node.characters).slice(0, 30) || `text_${index}`;
+    arbData[key] = node.characters;
+    arbData[`@${key}`] = {
+      "description": node.name || "No description"
+    };
+  });
+
+  return JSON.stringify(arbData, null, 2);
 }
 
 

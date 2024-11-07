@@ -5,23 +5,43 @@
   <h3>Export Texts to ARB</h3>
   <p>Please enter the minimum dimensions for design frames (screens) to be included:</p>
 
-  <label for="minWidth">Min Width (for design screen):</label>
-  <input type="number" id="minWidth" placeholder="e.g., 300" required><br><br>
+  <label for="useSelectedFrame">Use only selected frame (if selected):</label>
+  <input type="checkbox" id="useSelectedFrame"><br><br>
 
-  <label for="minHeight">Min Height (for design screen):</label>
-  <input type="number" id="minHeight" placeholder="e.g., 500" required><br><br>
+  <div id="dimensionInputs">
+    <label for="minWidth">Min Width (for design screen):</label>
+    <input type="number" id="minWidth" placeholder="e.g., 300" required><br><br>
+
+    <label for="minHeight">Min Height (for design screen):</label>
+    <input type="number" id="minHeight" placeholder="e.g., 500" required><br><br>
+  </div>
 
   <button id="exportButton">Extract and Download .arb</button>
 
   <script>
+    const useSelectedFrameCheckbox = document.getElementById('useSelectedFrame');
+    const dimensionInputs = document.getElementById('dimensionInputs');
+
+    useSelectedFrameCheckbox.onchange = () => {
+      // Hide dimension inputs if the checkbox is checked
+      const disableDimensions = useSelectedFrameCheckbox.checked;
+      dimensionInputs.style.display = disableDimensions ? 'none' : 'block';
+    };
+
     document.getElementById('exportButton').onclick = () => {
       const minWidth = parseInt(document.getElementById('minWidth').value, 10);
       const minHeight = parseInt(document.getElementById('minHeight').value, 10);
+      const useSelectedFrame = useSelectedFrameCheckbox.checked;
 
-      if (!isNaN(minWidth) && !isNaN(minHeight)) {
-        parent.postMessage({
-          pluginMessage: { type: 'export-text', minWidth, minHeight }
-        }, '*');
+      // Send only the necessary data
+      const pluginMessage = { type: 'export-text', useSelectedFrame };
+      if (!useSelectedFrame) {
+        pluginMessage.minWidth = minWidth;
+        pluginMessage.minHeight = minHeight;
+      }
+
+      if (useSelectedFrame || (!isNaN(minWidth) && !isNaN(minHeight))) {
+        parent.postMessage({ pluginMessage }, '*');
       } else {
         alert("Please enter valid values for both width and height.");
       }
