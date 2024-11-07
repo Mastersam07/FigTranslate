@@ -28,17 +28,18 @@
     };
 
     onmessage = (event) => {
-        if (event.data.pluginMessage.type === 'download-arb') {
-          const arbData = event.data.pluginMessage.data;
-          const blob = new Blob([arbData], { type: "application/json" });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = "en.arb";
-          a.click();
-          URL.revokeObjectURL(url);
-        }
-      };
+      if (event.data.pluginMessage.type === 'download-arb') {
+        const arbData = event.data.pluginMessage.data;
+        const blob = new Blob([arbData], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "en.arb";
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    };
   </script>
 </body>
+
 </html>
